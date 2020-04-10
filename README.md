@@ -13,3 +13,5 @@ LinkedHashMap сохраняет порядок вставки.
 Исходя из результатов теста HashMap имеет самую высокую производительностью при добавлении элементов. 
 При удалении и получении элементов самую высокую скорость показала LinkedHashMap.  
 
+![Image](https://https://github.com/Letchic/TestCollections/blob/master/datafiles/graphics/List_1.png)
+
