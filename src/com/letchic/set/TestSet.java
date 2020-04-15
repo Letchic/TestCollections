@@ -1,26 +1,16 @@
 package com.letchic.set;
 
-import com.letchic.CSVWriter;
-import com.letchic.map.TestMap;
-
+import com.letchic.TestData;
 import java.util.*;
 
-public class TestSet {
-    private static long timeOfHashSet;
-    private static long timeOfLinkedHashSet;
-    private static long timeOfTreeSet;
-    private static Set<Integer> hashSet = new HashSet<>();
-    private static Set<Integer> linkedHashSet = new LinkedHashSet<>();
-    private static Set<Integer> treeSet = new TreeSet<>();
+public class TestSet extends TestData {
+    private Set<Object> hashSet = new HashSet<>();
+    private Set<Object> linkedHashSet = new LinkedHashSet<>();
+    private Set<Object> treeSet = new TreeSet<>();
+    private List <String[]> list =  new ArrayList<>();
+    private String[][] data = new String[9][12];
 
-    private static int step=10000;
-    private static int repeat=1;
-    private static int amountOfRepeat;
-
-    private static List <String[]> list =  new ArrayList<>();
-    private static String[][] data = new String[9][12];
-
-    public static void getDataFromSet() {
+    public void getData() {
         for (String[] row: data) {
             Arrays.fill(row, "");
         }
@@ -40,9 +30,13 @@ public class TestSet {
             amountOfRepeat=step*i;
             hashSet.clear();
             linkedHashSet.clear();
-            treeSet.clear();
-            testAdd();
-            testRemove();
+
+            data[2][repeat]=setOperation(hashSet, (Set, x) -> Set.add(x),amountOfRepeat);
+            data[3][repeat]=setOperation(linkedHashSet, (Set, x) -> Set.add(x),amountOfRepeat);
+            data[4][repeat]=setOperation(treeSet, (Set, x) -> Set.add(x),amountOfRepeat);
+            data[6][repeat]=setOperation(hashSet, (Set, x) -> Set.remove(amountOfRepeat/2),amountOfRepeat);
+            data[7][repeat]=setOperation(linkedHashSet, (Set, x) -> Set.remove(amountOfRepeat/2),amountOfRepeat);
+            data[8][repeat]=setOperation(treeSet, (Set, x) -> Set.remove(amountOfRepeat/2),amountOfRepeat);
 
             data[0][repeat]=String.valueOf(amountOfRepeat);
             repeat++;
@@ -50,50 +44,14 @@ public class TestSet {
         for (int j = 0; j < 9; j++) {
             list.add(data[j]);
         }
-        CSVWriter.writeToCsvFile(list,"datafiles/dataSet.csv");
+        writeToCsvFile(list,"datafiles/dataSet.csv");
     }
 
-
-    public static void testAdd() {
-        timeOfTreeSet = System.nanoTime();
-        for (int i = 0; i < amountOfRepeat; i++) {
-            treeSet.add((int)(Math.random()*amountOfRepeat));
+    private String setOperation(Set<Object> set, OperationOnSet<Object> action, int iteration) {
+        long time = System.nanoTime();
+        for (int i = 0; i < iteration; i++) {
+            action.run(set, (int)(Math.random()*amountOfRepeat));
         }
-        timeOfTreeSet = System.nanoTime() - timeOfTreeSet;
-
-
-        timeOfLinkedHashSet = System.nanoTime();
-        for (int i = 0; i < amountOfRepeat; i++) {
-            linkedHashSet.add((int)(Math.random()*amountOfRepeat));
-        }
-        timeOfLinkedHashSet = System.nanoTime() - timeOfLinkedHashSet;
-        timeOfHashSet = System.nanoTime();
-
-        for (int i = 0; i < amountOfRepeat; i++) {
-            hashSet.add((int)(Math.random()*amountOfRepeat));
-        }
-        timeOfHashSet = System.nanoTime() - timeOfHashSet;
-
-        data[2][repeat]=String.valueOf(timeOfHashSet);
-        data[3][repeat]=String.valueOf(timeOfLinkedHashSet);
-        data[4][repeat]=String.valueOf(timeOfTreeSet);
-    }
-
-    public static void testRemove() {
-        timeOfHashSet = System.nanoTime();
-            hashSet.remove(amountOfRepeat/2);
-        timeOfHashSet = System.nanoTime() - timeOfHashSet;
-
-        timeOfLinkedHashSet = System.nanoTime();
-            linkedHashSet.remove(amountOfRepeat/2);
-        timeOfLinkedHashSet = System.nanoTime() - timeOfLinkedHashSet;
-
-        timeOfTreeSet = System.nanoTime();
-            treeSet.remove(amountOfRepeat/2);
-        timeOfTreeSet = System.nanoTime() - timeOfTreeSet;
-
-        data[6][repeat]=String.valueOf(timeOfHashSet);
-        data[7][repeat]=String.valueOf(timeOfLinkedHashSet);
-        data[8][repeat]=String.valueOf(timeOfTreeSet);
+        return String.valueOf(System.nanoTime() - time);
     }
 }

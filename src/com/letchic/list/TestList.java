@@ -1,26 +1,18 @@
 package com.letchic.list;
 
-import com.letchic.CSVWriter;
-
+import com.letchic.TestData;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class TestList {
-    private static long timeOfArrayList;
-    private static long timeOfLinkedList;
-    private static int step=2000;
-    private static int repeat=1;
-    private static int amountOfRepeat;
-    private static List<String> arrayListlist = new ArrayList<>();
-    private static List<String> linkedList = new LinkedList<>();
+public class TestList extends TestData {
+    private List<Object> arraylist = new ArrayList<>();
+    private List<Object> linkedList = new LinkedList<>();
+    private List <String[]> list =  new ArrayList<>();
+    private String[][] data = new String[22][12];
 
-    static List <String[]> list =  new ArrayList<>();
-    private static String[][] data = new String[22][12];
-
-
-    public static void getDataFromList() {
+    public void getData() {
         for (String[] row: data) {
             Arrays.fill(row, "");
         }
@@ -49,17 +41,25 @@ public class TestList {
         data[21][0]="timeOfLinkedList";
 
         for (int i = 1; i <= 10; i++) {
-
+            step=2000;
             amountOfRepeat=step*i;
-            arrayListlist.clear();
+            arraylist.clear();
             linkedList.clear();
-            testAdd();
-            testAddtoHead();
-            testAddtoMid();
-            testGet();
-            testSet();
-            testRemove();
-            testRemovehead();
+
+            data[2][repeat]=listoperation(arraylist, (List, x) -> List.add(x),amountOfRepeat);
+            data[3][repeat]=listoperation(linkedList, (List, x) -> List.add(x),amountOfRepeat);
+            data[5][repeat]=listoperation(arraylist, (List, x) -> List.add(0,x),amountOfRepeat);
+            data[6][repeat]=listoperation(linkedList, (List, x) -> List.add(0,x),amountOfRepeat);
+            data[8][repeat]=listoperation(arraylist, (List, x) -> List.add(amountOfRepeat/2,x),amountOfRepeat);
+            data[9][repeat]=listoperation(linkedList, (List, x) -> List.add(amountOfRepeat/2,x),amountOfRepeat);
+            data[11][repeat]=listoperation(arraylist, (List, x) -> List.get(amountOfRepeat/2),amountOfRepeat);
+            data[12][repeat]=listoperation(linkedList, (List, x) -> List.get(amountOfRepeat/2),amountOfRepeat);
+            data[14][repeat]=listoperation(arraylist, (List, x) -> List.set((amountOfRepeat/2),x),amountOfRepeat);
+            data[15][repeat]=listoperation(linkedList, (List, x) -> List.set((amountOfRepeat/2),x),amountOfRepeat);
+            data[17][repeat]=listoperation(arraylist, (List, x) -> List.remove(amountOfRepeat/2),amountOfRepeat);
+            data[18][repeat]=listoperation(linkedList, (List, x) -> List.remove(amountOfRepeat/2),amountOfRepeat);
+            data[20][repeat]=listoperation(arraylist, (List, x) -> List.remove(0),amountOfRepeat);
+            data[21][repeat]=listoperation(linkedList, (List, x) -> List.remove(0),amountOfRepeat);
 
             data[0][repeat]=String.valueOf(amountOfRepeat);
             repeat++;
@@ -67,108 +67,14 @@ public class TestList {
         for (int j = 0; j < 22; j++) {
             list.add(data[j]);
         }
-        CSVWriter.writeToCsvFile(list,"datafiles/dataList.csv");
+        writeToCsvFile(list,"datafiles/dataList.csv");
     }
 
-    public static void testAdd(){
-        timeOfArrayList = System.nanoTime();
-        for (int i = 0; i < amountOfRepeat; i++) {
-            arrayListlist.add("test");
+    private String listoperation(List<Object> list, OperationOnList<Object> action, int iteration) {
+        long time = System.nanoTime();
+        for (int i = 0; i < iteration; i++) {
+            action.run(list, new Object());
         }
-        timeOfArrayList = System.nanoTime() - timeOfArrayList;
-
-        timeOfLinkedList = System.nanoTime();
-        for (int i = 0; i < amountOfRepeat; i++) {
-            linkedList.add("test");
-        }
-        timeOfLinkedList = System.nanoTime() - timeOfLinkedList;
-
-        data[2][repeat]=String.valueOf(timeOfArrayList);
-        data[3][repeat]=String.valueOf(timeOfLinkedList);
-    }
-
-    public static void testAddtoHead(){
-        timeOfArrayList = System.nanoTime();
-        for (int i = 0; i < amountOfRepeat; i++) {
-            arrayListlist.add(0,"test");
-        }
-        timeOfArrayList = System.nanoTime() - timeOfArrayList;
-
-        timeOfLinkedList = System.nanoTime();
-        for (int i = 0; i < amountOfRepeat; i++) {
-            linkedList.add(0,"test");
-        }
-        timeOfLinkedList = System.nanoTime() - timeOfLinkedList;
-
-        data[5][repeat]=String.valueOf(timeOfArrayList);
-        data[6][repeat]=String.valueOf(timeOfLinkedList);
-    }
-
-    public static void testAddtoMid(){
-        timeOfArrayList = System.nanoTime();
-        for (int i = 0; i < amountOfRepeat; i++) {
-            arrayListlist.add(amountOfRepeat/2,"test");
-        }
-        timeOfArrayList = System.nanoTime() - timeOfArrayList;
-
-        timeOfLinkedList = System.nanoTime();
-        for (int i = 0; i < amountOfRepeat; i++) {
-            linkedList.add(amountOfRepeat/2,"test");
-        }
-        timeOfLinkedList = System.nanoTime() - timeOfLinkedList;
-
-        data[8][repeat]=String.valueOf(timeOfArrayList);
-        data[9][repeat]=String.valueOf(timeOfLinkedList);
-    }
-    public static void testGet(){
-        timeOfArrayList = System.nanoTime();
-            arrayListlist.get(amountOfRepeat/2);
-        timeOfArrayList = System.nanoTime() - timeOfArrayList;
-
-        timeOfLinkedList = System.nanoTime();
-            linkedList.get(amountOfRepeat/2);
-         timeOfLinkedList = System.nanoTime() - timeOfLinkedList;
-
-        data[11][repeat]=String.valueOf(timeOfArrayList);
-        data[12][repeat]=String.valueOf(timeOfLinkedList);
-    }
-    public static void testSet(){
-        timeOfArrayList = System.nanoTime();
-            arrayListlist.set(amountOfRepeat/2,"anothertest");
-        timeOfArrayList = System.nanoTime() - timeOfArrayList;
-
-        timeOfLinkedList = System.nanoTime();
-            linkedList.set(amountOfRepeat/2,"anothertest");
-        timeOfLinkedList = System.nanoTime() - timeOfLinkedList;
-
-
-        data[14][repeat]=String.valueOf(timeOfArrayList);
-        data[15][repeat]=String.valueOf(timeOfLinkedList);
-    }
-    public static void testRemove(){
-        timeOfArrayList = System.nanoTime();
-            arrayListlist.remove(amountOfRepeat/2);
-        timeOfArrayList = System.nanoTime() - timeOfArrayList;
-
-        timeOfLinkedList = System.nanoTime();
-            linkedList.remove(amountOfRepeat/2);
-        timeOfLinkedList = System.nanoTime() - timeOfLinkedList;
-
-        data[17][repeat]=String.valueOf(timeOfArrayList);
-        data[18][repeat]=String.valueOf(timeOfLinkedList);
-
-    }
-
-    public static void testRemovehead(){
-        timeOfArrayList = System.nanoTime();
-            arrayListlist.remove(0);
-        timeOfArrayList = System.nanoTime() - timeOfArrayList;
-
-        timeOfLinkedList = System.nanoTime();
-            linkedList.remove(0);
-        timeOfLinkedList = System.nanoTime() - timeOfLinkedList;
-
-        data[20][repeat]=String.valueOf(timeOfArrayList);
-        data[21][repeat]=String.valueOf(timeOfLinkedList);
+        return String.valueOf(System.nanoTime() - time);
     }
 }

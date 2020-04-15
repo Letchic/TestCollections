@@ -1,26 +1,16 @@
 package com.letchic.map;
 
-import com.letchic.CSVWriter;
-
+import com.letchic.TestData;
 import java.util.*;
 
-public class TestMap {
-    private static long timeOfHashMap;
-    private static long timeOfLinkedHashMap;
-    private static long timeOfTreeMap;
+public class TestMap extends TestData {
+    private Map<Integer,Object> hashMap = new HashMap<>();
+    private Map<Integer,Object> linkedHashMap = new LinkedHashMap<>();
+    private Map<Integer,Object> treeMap = new TreeMap<>();
+    private List <String[]> list =  new ArrayList<>();
+    private String[][] data = new String[13][12];
 
-    private static int step=10000;
-    private static int repeat=1;
-    private static int amountOfRepeat;
-
-    private static Map<Integer,String> hashMap = new HashMap<>();
-    private static Map<Integer,String> linkedHashMap = new LinkedHashMap<>();
-    private static Map<Integer,String> treeMap = new TreeMap<>();
-
-    private static List <String[]> list =  new ArrayList<>();
-    private static String[][] data = new String[13][12];
-
-    public static void getDataFromMap() {
+    public void getData() {
         for (String[] row: data) {
             Arrays.fill(row, "");
         }
@@ -39,15 +29,21 @@ public class TestMap {
         data[11][0]="timeOfLinkedHashMap";
         data[12][0]="timeOfTreeMap";
 
-
         for (int i = 1; i <= 10; i++) {
             amountOfRepeat=step*i;
             hashMap.clear();
             linkedHashMap.clear();
             treeMap.clear();
-            testPut();
-            testGet();
-            testRemove();
+
+            data[2][repeat]=mapoperation(hashMap,(Map,key, x)->Map.put(key,x),amountOfRepeat);
+            data[3][repeat]=mapoperation(linkedHashMap,(Map,key, x)->Map.put(key,x),amountOfRepeat);
+            data[4][repeat]=mapoperation(treeMap,(Map,key, x)->Map.put(key,x),amountOfRepeat);
+            data[6][repeat]=mapoperation(hashMap,(Map,key, x)->Map.get(amountOfRepeat/2),amountOfRepeat);
+            data[7][repeat]=mapoperation(linkedHashMap,(Map,key, x)->Map.get(amountOfRepeat/2),amountOfRepeat);
+            data[8][repeat]=mapoperation(treeMap,(Map,key, x)->Map.get(amountOfRepeat/2),amountOfRepeat);
+            data[10][repeat]=mapoperation(hashMap,(Map,key, x)->Map.remove(amountOfRepeat/2),amountOfRepeat);
+            data[11][repeat]=mapoperation(linkedHashMap,(Map,key, x)->Map.remove(amountOfRepeat/2),amountOfRepeat);
+            data[12][repeat]=mapoperation(treeMap,(Map,key, x)->Map.remove(amountOfRepeat/2),amountOfRepeat);
 
             data[0][repeat]=String.valueOf(amountOfRepeat);
             repeat++;
@@ -55,69 +51,14 @@ public class TestMap {
         for (int j = 0; j < 13; j++) {
             list.add(data[j]);
         }
-        CSVWriter.writeToCsvFile(list,"datafiles/dataMap.csv");
+        writeToCsvFile(list,"datafiles/dataMap.csv");
     }
 
-    public static void testPut() {
-        timeOfHashMap = System.nanoTime();
-        for (int i = 0; i < amountOfRepeat; i++) {
-            hashMap.put(i,"test");
+    private String  mapoperation (Map<Integer,Object> map, OperationOnMap<Object> action, int iteration) {
+        long time = System.nanoTime();
+        for (int i = 0; i < iteration; i++) {
+            action.run(map, i, new Object());
         }
-        timeOfHashMap = System.nanoTime() - timeOfHashMap;
-
-
-        timeOfLinkedHashMap = System.nanoTime();
-        for (int i = 0; i < amountOfRepeat; i++) {
-            linkedHashMap.put(i,"test");
-        }
-        timeOfLinkedHashMap = System.nanoTime() - timeOfLinkedHashMap;
-
-        timeOfTreeMap = System.nanoTime();
-        for (int i = 0; i < amountOfRepeat; i++) {
-            treeMap.put(i,"test");
-        }
-        timeOfTreeMap = System.nanoTime() - timeOfTreeMap;
-
-        data[2][repeat]=String.valueOf(timeOfHashMap);
-        data[3][repeat]=String.valueOf(timeOfLinkedHashMap);
-        data[4][repeat]=String.valueOf(timeOfTreeMap);
-    }
-
-    public static void testGet() {
-        timeOfHashMap = System.nanoTime();
-            hashMap.get(amountOfRepeat/2);
-        timeOfHashMap = System.nanoTime() - timeOfHashMap;
-
-
-        timeOfLinkedHashMap = System.nanoTime();
-            linkedHashMap.get(amountOfRepeat/2);
-        timeOfLinkedHashMap = System.nanoTime() - timeOfLinkedHashMap;
-
-        timeOfTreeMap = System.nanoTime();
-            treeMap.get(amountOfRepeat/2);
-        timeOfTreeMap = System.nanoTime() - timeOfTreeMap;
-
-        data[6][repeat]=String.valueOf(timeOfHashMap);
-        data[7][repeat]=String.valueOf(timeOfLinkedHashMap);
-        data[8][repeat]=String.valueOf(timeOfTreeMap);
-    }
-
-    public static void testRemove() {
-        timeOfHashMap = System.nanoTime();
-            hashMap.remove(amountOfRepeat/2);
-        timeOfHashMap = System.nanoTime() - timeOfHashMap;
-
-
-        timeOfLinkedHashMap = System.nanoTime();
-            linkedHashMap.remove(amountOfRepeat/2);
-        timeOfLinkedHashMap = System.nanoTime() - timeOfLinkedHashMap;
-
-        timeOfTreeMap = System.nanoTime();
-            treeMap.remove(amountOfRepeat/2);
-        timeOfTreeMap = System.nanoTime() - timeOfTreeMap;
-
-        data[10][repeat]=String.valueOf(timeOfHashMap);
-        data[11][repeat]=String.valueOf(timeOfLinkedHashMap);
-        data[12][repeat]=String.valueOf(timeOfTreeMap);
+        return String.valueOf(System.nanoTime() - time);
     }
 }

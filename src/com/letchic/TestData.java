@@ -4,7 +4,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
-public class CSVWriter {
+public abstract class TestData {
+    protected int amountOfRepeat;
+    protected int repeat=1;
+    protected int step=10000;
+    protected abstract void getData();
+
     public static void writeToCsvFile(List<String[]> thingsToWrite, String fileName){
         try (FileWriter writer = new FileWriter(fileName)){
             for (String[] strings : thingsToWrite) {
